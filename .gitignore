@@ -1,9 +1,15 @@
 
 *.o
+*.a
 *.test
 bin/*
 *~
 *anjuta*
 *sonar*
 *kdev*
+containers/bin
+.sconf_temp
+.sconsign.dblite
+config.log
+
 
