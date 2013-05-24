@@ -413,6 +413,45 @@ void initTable() {
   table['N'] = AA;
 }
 
+////////////////////
+
+int nA = 4;
+//int AA = -1, CC = -1, GG = -1, TT = -1;
+
+//int table[128];
+int rev_table[4] = {};
+
+void initReplaceTable_bs(const char *str) {
+
+  if (str == NULL) {
+
+    nA = 4;
+    //AA = 0; CC = 1; GG = 2; TT = 3;
+
+    table['a'] = AA; table['A'] = AA;
+    table['c'] = CC; table['C'] = CC;
+    table['t'] = TT; table['T'] = TT;
+    table['g'] = GG; table['G'] = GG;
+    table['n'] = AA; table['N'] = AA;
+  } else {
+
+    nA = strlen(str);
+    //printf("nA = %d (init)\n", nA);
+
+    for (int i = 0; i < nA; i++) {
+      table[toupper(str[i])] = i;
+      table[tolower(str[i])] = i;
+
+//      if      (toupper(str[i]) == 'A') AA = i;
+//      else if (toupper(str[i]) == 'C') CC = i;
+//      else if (toupper(str[i]) == 'G') GG = i;
+//      else if (toupper(str[i]) == 'T') TT = i;
+    }
+  }
+}
+
+////////////////////
+
 char* encodeBases(char* dest, char* src, unsigned int length) {
   unsigned int i;
   for (i=0; i<length; i++)

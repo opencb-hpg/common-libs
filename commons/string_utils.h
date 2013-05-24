@@ -382,5 +382,7 @@ char* encodeBases(char *dest, char* src, unsigned int length);
  */
 char* decodeBases(char *dest, char* src, unsigned int length);
 
+extern int nA;
+void initReplaceTable_bs(const char *str);
 
 #endif	/*    STRING_UTILS_H	*/
