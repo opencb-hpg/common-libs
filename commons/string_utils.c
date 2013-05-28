@@ -396,11 +396,53 @@ int strcasecmp(const char *s1, const char *s2) {
 //-----------------------------------------------------------
 // functions to encode and decode nucleotied sequences
 //-----------------------------------------------------------
-// enum bases{DD=-1,AA=0,CC=1,GG=2,TT=3}; //Lexicographic order
-// const char alph_rep[] ={'A','C','G','T'};
-int table[128] = {};
+
+int nA;
+int AA = -1, CC = -1, GG = -1, TT = -1;
+
+int table[128];
+int rev_table[4];
+
+
+void initReplaceTable_bs(const char *str) {
+
+  if (str == NULL) {
+
+    nA = 4;
+    AA = 0; CC = 1; GG = 2; TT = 3;
+
+    table['a'] = AA; table['A'] = AA;
+    table['c'] = CC; table['C'] = CC;
+    table['t'] = TT; table['T'] = TT;
+    table['g'] = GG; table['G'] = GG;
+    table['n'] = AA; table['N'] = AA;
+
+    rev_table[AA] = 'A';
+    rev_table[CC] = 'C';
+    rev_table[GG] = 'G';
+    rev_table[TT] = 'T';
+
+  } else {
+
+    nA = strlen(str);
+
+    for (int i = 0; i < nA; i++) {
+      rev_table[i] = toupper(str[i]);
+
+      table[toupper(str[i])] = i;
+      table[tolower(str[i])] = i;
+
+      if      (toupper(str[i]) == 'A') AA = i;
+      else if (toupper(str[i]) == 'C') CC = i;
+      else if (toupper(str[i]) == 'G') GG = i;
+      else if (toupper(str[i]) == 'T') TT = i;
+    }
+  }
+}
 
 void initTable() {
+  initReplaceTable_bs(NULL);
+/*
   table['a'] = AA;
   table['A'] = AA;
   table['c'] = CC;
@@ -411,6 +453,7 @@ void initTable() {
   table['G'] = GG;
   table['n'] = AA;
   table['N'] = AA;
+*/
 }
 
 ////////////////////

@@ -349,7 +349,7 @@ int strcasecmp(const char *s1, const char *s2);
  *    		Functions to encode/decode nucleotid sequences			*
  * *****************************************************************************/
 
-enum bases{ DD = -1, AA = 0, CC = 1, GG = 2, TT = 3 }; //Lexicographic order
+//enum bases{ DD = -1, AA = 0, CC = 1, GG = 2, TT = 3 }; //Lexicographic order
 static const char alph_rep[] ={'A', 'C', 'G', 'T'};
 
 /**
@@ -383,6 +383,11 @@ char* encodeBases(char *dest, char* src, unsigned int length);
 char* decodeBases(char *dest, char* src, unsigned int length);
 
 extern int nA;
+extern int AA, CC, GG, TT;
+
+extern int table[128];
+extern int rev_table[4];
+
 void initReplaceTable_bs(const char *str);
 
 #endif	/*    STRING_UTILS_H	*/
