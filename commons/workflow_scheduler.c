@@ -54,6 +54,11 @@ workflow_t *workflow_new() {
      pthread_mutex_init(&wf->consumer_mutex, NULL);
      
      pthread_mutex_init(&wf->main_mutex, NULL);
+
+     wf->workflow_time = 0;
+     wf->producer_time = 0;
+     wf->consumer_time = 0;
+     wf->stage_times = NULL;
      
      wf->pending_items = NULL;
      wf->completed_items = array_list_new(100, 1.25f, COLLECTION_MODE_ASYNCHRONIZED);
@@ -77,6 +82,10 @@ workflow_t *workflow_new() {
 
 void workflow_free(workflow_t *wf) {
      if (wf == NULL) return;
+
+     if (wf->stage_times) {
+       free(wf->stage_times);
+     }
      
      if (wf->pending_items) {
 	  for (int i = 0; i < wf->num_stages; i++) {
@@ -123,6 +132,8 @@ void workflow_set_stages(int num_stages, workflow_stage_function_t *functions,
 	  
 	  wf->num_stages = num_stages;
 	  wf->stage_functions = functions;
+
+	  wf->stage_times = (double *) calloc(num_stages, sizeof(double));
 	  wf->pending_items = (array_list_t **) calloc(num_stages, sizeof(array_list_t *));
 	  
 	  if (labels) wf->stage_labels = (char **) calloc(num_stages, sizeof(char *));
@@ -401,7 +412,12 @@ void workflow_schedule(workflow_t *wf) {
 	  workflow_stage_function_t stage_function = wf->stage_functions[item->stage_id];
 
 	  //	  Extrae_event(6000019, item->stage_id + 1); 
+	  struct timeval start_time, end_time;
+	  double total_time;
+	  start_timer(start_time);
 	  int next_stage = stage_function(item->data);
+	  stop_timer(start_time, end_time, total_time);
+	  wf->stage_times[item->stage_id] += (total_time / 1000000.0f);
 	  //	  Extrae_event(6000019, 0); 
 
 	  item->stage_id = next_stage;
@@ -494,6 +510,9 @@ void workflow_context_free(workflow_context_t *c) {
 //----------------------------------------------------------------------------------------
 
 void *thread_function(void *wf_context) {
+
+  struct timeval start_time, end_time;
+  double total_time;
   void *input = ((workflow_context_t *) wf_context)->input;
   workflow_t *wf = ((workflow_context_t *) wf_context)->wf;
   
@@ -512,7 +531,12 @@ void *thread_function(void *wf_context) {
 	workflow_lock_producer(wf)) {
       
       //	 Extrae_event(6000019, 7); 
+      total_time = 0;
+      start_timer(start_time);
       data = producer_function(input);
+      stop_timer(start_time, end_time, total_time);
+      wf->producer_time += (total_time / 1000000.0f);
+
       //	 Extrae_event(6000019, 0); 
       
       if (data) {
@@ -530,7 +554,11 @@ void *thread_function(void *wf_context) {
 	    !wf->num_pending_items && wf->completed_producer) {
 	  global_status = WORKFLOW_STATUS_FINISHED;
 	}
+	total_time = 0;
+	start_timer(start_time);
 	consumer_function(data);
+	stop_timer(start_time, end_time, total_time);
+	wf->consumer_time += (total_time / 1000000.0f);
       }
       workflow_unlock_consumer(wf);
     } else {
@@ -597,6 +625,9 @@ void workflow_run_with(int num_threads, void *input, workflow_t *wf) {
      }
 
      gettimeofday(&stop_time, NULL);
+     wf->workflow_time = (stop_time.tv_sec - start_time.tv_sec) + 
+       ((stop_time.tv_usec - start_time.tv_usec) / 1000000.0);
+
      /*
      printf("\t\t---------------> Workflow time = %0.4f sec\n", 
 	    (stop_time.tv_sec - start_time.tv_sec) + 
@@ -604,6 +635,47 @@ void workflow_run_with(int num_threads, void *input, workflow_t *wf) {
      */
      workflow_context_free(wf_context);
      //     Extrae_fini();
+}
+
+//----------------------------------------------------------------------------------------
+
+void workflow_display_timing(workflow_t *wf) {
+  // producer
+  if (wf->producer_function) {
+    if (wf->producer_label) {
+      printf("%s: %0.04f s\n", wf->producer_label, wf->producer_time);
+    } else {
+      printf("Producer: %0.04f s\n", wf->producer_time);
+    }
+  } else {
+    printf("No producer stage.\n");
+  }
+
+  // internal stages
+  printf("\n");
+  for (int i = 0; i < wf->num_stages; i++) {
+    if (wf->stage_labels[i]) {
+      printf("%s: %0.04f s\n", wf->stage_labels[i], wf->stage_times[i]);
+    } else {
+      printf("Stage %3i: %0.04f s\n", i, wf->stage_times[i]);
+    }
+  }
+  printf("\n");
+
+  // consumer
+  if (wf->consumer_function) {
+    if (wf->consumer_label) {
+      printf("%s: %0.04f s\n", wf->consumer_label, wf->consumer_time);
+    } else {
+      printf("Consumer: %0.04f s\n", wf->consumer_time);
+    }
+  } else {
+    printf("No consumer stage.\n");
+  }
+  printf("\n");
+
+  printf("Workflow    : %0.04f s\n", wf->workflow_time);
+
 }
 
 //----------------------------------------------------------------------------------------
