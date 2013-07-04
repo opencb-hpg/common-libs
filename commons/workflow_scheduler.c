@@ -236,10 +236,9 @@ void workflow_insert_item_at(int stage_id, void *data, workflow_t *wf) {
      pthread_mutex_lock(&wf->main_mutex);
      //printf("Producer mutex lock\n");
      while (workflow_get_num_items_(wf) >= wf->max_num_work_items) {
-       //printf("Wait insert...\n");
-	  pthread_cond_wait(&wf->producer_cond, &wf->main_mutex);
+       pthread_cond_wait(&wf->producer_cond, &wf->main_mutex);
      }
-     //printf("Insert continue\n");
+
      if (array_list_insert(item, wf->pending_items[stage_id])) {
 	  wf->num_pending_items++;
 	  item->context = (void *) wf;
@@ -526,10 +525,6 @@ void *thread_function(void *wf_context) {
 	       workflow_get_num_completed_items_(wf) > 0 && 
 	       workflow_lock_consumer(wf)) {	 
       if (data = workflow_remove_item(wf)) {
-	if (array_list_size(wf->completed_items) == 0 && 
-	    !wf->num_pending_items && wf->completed_producer) {
-	  global_status = WORKFLOW_STATUS_FINISHED;
-	}
 	consumer_function(data);
       }
       workflow_unlock_consumer(wf);

@@ -61,10 +61,12 @@ array_list_t* array_list_new(size_t initial_capacity, float realloc_factor, int 
 int array_list_clear(array_list_t *array_list_p,  void (*data_callback) (void* data)) {
 	if(array_list_p != NULL) {
 		// Free c
-		for(size_t i=0; i < array_list_p->size; i++) {
-			if(data_callback != NULL && array_list_p->items != NULL && array_list_p->items[i] != NULL) {
-				data_callback(array_list_p->items[i]);
-			}
+	        if (data_callback != NULL) {
+		        for(size_t i=0; i < array_list_p->size; i++) {
+			        if(array_list_p->items != NULL && array_list_p->items[i] != NULL) {
+				        data_callback(array_list_p->items[i]);
+			        }
+		         }
 		}
 		// Set default parameters
 		array_list_p->size = 0;
@@ -281,7 +283,7 @@ void* array_list_remove_at(size_t index, array_list_t *array_list_p) {
 		}
 
 		void *aux = array_list_p->items[index];
-		for(size_t i=index; i<array_list_p->size; i++) {
+		for(size_t i=index; i<array_list_p->size - 1; i++) {
 			array_list_p->items[i] = array_list_p->items[i+1];
 		}
 

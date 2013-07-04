@@ -33,12 +33,14 @@
     log_file = fopen(filename, mode);			\
 }
 
-#define LOG_DEBUG(msg) {			\
-    if (LOG_DEBUG_LEVEL >= log_level) { \
-        print_log_message(LOG_DEBUG_LEVEL, "DEBUG",		\
-        __FILE__, __LINE__, __func__, msg);				\
-    }   \
+
+#define LOG_DEBUG(msg) {				\
+    if (LOG_DEBUG_LEVEL >= log_level) {				\
+      print_log_message(LOG_DEBUG_LEVEL, "DEBUG",		\
+			__FILE__, __LINE__, __func__, msg);		\
+    }									\
 }
+
 
 #define LOG_INFO(msg) {			\
     if (LOG_INFO_LEVEL >= log_level) { \
@@ -67,12 +69,15 @@
     exit(-1);										\
 }
 
-#define LOG_DEBUG_F(msg, ...) {            \
-    if (LOG_DEBUG_LEVEL >= log_level) { \
-        print_log_message_with_format(LOG_DEBUG_LEVEL, "DEBUG",     \
-        __FILE__, __LINE__, __func__, msg, __VA_ARGS__);             \
-    }   \
+
+#define LOG_DEBUG_F(msg, ...) {					     \
+ if (LOG_DEBUG_LEVEL >= log_level) {				     \
+   print_log_message_with_format(LOG_DEBUG_LEVEL, "DEBUG",		\
+				 __FILE__, __LINE__, __func__, msg, __VA_ARGS__); \
+    }								     \
 }
+
+
 
 #define LOG_INFO_F(msg, ...) {         \
     if (LOG_INFO_LEVEL >= log_level) { \

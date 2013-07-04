@@ -307,6 +307,8 @@ void* linked_list_remove_last(linked_list_t *linked_list_p) {
 	linked_list_p->last = linked_list_p->last->prev;
 	if (linked_list_p->last) {
 	  linked_list_p->last->next = NULL;
+	} else {
+	  linked_list_p->first = NULL;
 	}
 	linked_list_p->size--;
 	item = list_item->item;
