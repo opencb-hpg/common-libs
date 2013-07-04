@@ -69,6 +69,8 @@ struct workflow {
   double consumer_time;
   double *stage_times;
 
+  pthread_mutex_t *stage_times_mutex;     
+
   array_list_t **pending_items;
   array_list_t *completed_items;
   

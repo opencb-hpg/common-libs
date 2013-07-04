@@ -134,6 +134,12 @@ void workflow_set_stages(int num_stages, workflow_stage_function_t *functions,
 	  wf->stage_functions = functions;
 
 	  wf->stage_times = (double *) calloc(num_stages, sizeof(double));
+
+	  wf->stage_times_mutex = (pthread_mutex_t *) calloc(num_stages, sizeof(pthread_mutex_t));     
+	  for (int i = 0; i < num_stages; i++) {
+	    pthread_mutex_init(&wf->stage_times_mutex[i], NULL);
+	  }
+
 	  wf->pending_items = (array_list_t **) calloc(num_stages, sizeof(array_list_t *));
 	  
 	  if (labels) wf->stage_labels = (char **) calloc(num_stages, sizeof(char *));
@@ -417,7 +423,9 @@ void workflow_schedule(workflow_t *wf) {
 	  start_timer(start_time);
 	  int next_stage = stage_function(item->data);
 	  stop_timer(start_time, end_time, total_time);
+	  pthread_mutex_lock(&wf->stage_times_mutex[item->stage_id]);
 	  wf->stage_times[item->stage_id] += (total_time / 1000000.0f);
+	  pthread_mutex_unlock(&wf->stage_times_mutex[item->stage_id]);
 	  //	  Extrae_event(6000019, 0); 
 
 	  item->stage_id = next_stage;
@@ -640,6 +648,7 @@ void workflow_run_with(int num_threads, void *input, workflow_t *wf) {
 //----------------------------------------------------------------------------------------
 
 void workflow_display_timing(workflow_t *wf) {
+  double total = 0.0;
   // producer
   if (wf->producer_function) {
     if (wf->producer_label) {
@@ -647,6 +656,7 @@ void workflow_display_timing(workflow_t *wf) {
     } else {
       printf("Producer: %0.04f s\n", wf->producer_time);
     }
+    total += wf->producer_time;
   } else {
     printf("No producer stage.\n");
   }
@@ -659,6 +669,7 @@ void workflow_display_timing(workflow_t *wf) {
     } else {
       printf("Stage %3i: %0.04f s\n", i, wf->stage_times[i]);
     }
+    total += wf->stage_times[i];
   }
   printf("\n");
 
@@ -669,12 +680,17 @@ void workflow_display_timing(workflow_t *wf) {
     } else {
       printf("Consumer: %0.04f s\n", wf->consumer_time);
     }
+    total += wf->consumer_time;
   } else {
     printf("No consumer stage.\n");
   }
   printf("\n");
 
   printf("Workflow    : %0.04f s\n", wf->workflow_time);
+  printf("\n");
+  printf("Num. threads       : %i \n", wf->num_threads);
+  printf("Time addition      : %0.4f s\n", total);
+  printf("Scheduling overhead: %0.2f %\n", 100.0 - (100.0 * (total / wf->workflow_time) / wf->num_threads));
 
 }
 
