@@ -36,10 +36,8 @@ array_list_t* array_list_new(size_t initial_capacity, float realloc_factor, int 
 	array_list_p->realloc_factor = realloc_factor;
 	array_list_p->mode = SYNC_MODE;
 	array_list_p->compare_fn = compare_items;
-
+	array_list_p->flag = 0;
 	array_list_p->items = (void**) malloc(initial_capacity * sizeof(void*));
-
-//	array_list_init(10, 1.5, COLLECTION_MODE_SYNCHRONIZED, array_list_p);
 
 	pthread_mutex_init(&(array_list_p->lock), NULL);
 
