@@ -188,7 +188,7 @@ int array_list_insert_at(size_t index, void *item_p, array_list_t *array_list_p)
 				array_list_p->items[i] = array_list_p->items[i-1];
 			}
 			array_list_p->items[index] = item_p;
-            array_list_p->size++;
+			array_list_p->size++;
 
 			if(array_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
 				pthread_mutex_unlock(&array_list_p->lock);
@@ -303,7 +303,7 @@ void** array_list_remove_range(size_t start, size_t end, array_list_t *array_lis
 
 void* array_list_get(size_t index, array_list_t *array_list_p) {
 	void *item_p;
-	if(array_list_p != NULL && index >= 0 && index <= array_list_p->size) {
+	if(array_list_p != NULL && index >= 0 && index < array_list_p->size) {
 	    if(array_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
 		    pthread_mutex_lock(&array_list_p->lock);
 	    }

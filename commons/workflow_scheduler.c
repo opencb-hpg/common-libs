@@ -423,6 +423,7 @@ void workflow_schedule(workflow_t *wf) {
 	  double total_time;
 	  start_timer(start_time);
 	  int next_stage = stage_function(item->data);
+
 	  stop_timer(start_time, end_time, total_time);
 	  pthread_mutex_lock(&wf->stage_times_mutex[item->stage_id]);
 	  wf->stage_times[item->stage_id] += (total_time / 1000000.0f);
@@ -532,7 +533,6 @@ void *thread_function(void *wf_context) {
   workflow_producer_function_t producer_function = wf->producer_function;
   workflow_consumer_function_t consumer_function = wf->consumer_function;
 
-
   while (workflow_get_status(wf) == WORKFLOW_STATUS_RUNNING) {
     if (producer_function                        &&
 	workflow_get_num_items(wf) < num_threads && 
@@ -547,7 +547,6 @@ void *thread_function(void *wf_context) {
       wf->producer_time += (total_time / 1000000.0f);
 
       //	 Extrae_event(6000019, 0); 
-      
       if (data) {
 	workflow_insert_item(data, wf);
       } else {
@@ -565,6 +564,7 @@ void *thread_function(void *wf_context) {
 	stop_timer(start_time, end_time, total_time);
 	wf->consumer_time += (total_time / 1000000.0f);
       }
+
       workflow_unlock_consumer(wf);
     } else {
       workflow_schedule(wf);
