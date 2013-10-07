@@ -44,6 +44,28 @@ array_list_t* array_list_new(size_t initial_capacity, float realloc_factor, int 
 	return array_list_p;
 }
 
+array_list_t* array_list_dup(array_list_t *array_list_p) {
+        array_list_t* new_list = NULL;
+
+        if(array_list_p != NULL) {
+	  if(array_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
+	      pthread_mutex_lock(&array_list_p->lock);
+	  }
+
+	  new_list = array_list_new(array_list_p->size, array_list_p->realloc_factor, array_list_p->mode);
+	  for (size_t i = 0; i < array_list_p->size; i++) {
+	    array_list_insert(array_list_get(i, array_list_p), new_list);
+	  }
+
+	  if(array_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
+	    pthread_mutex_unlock(&array_list_p->lock);
+	  }
+
+	}
+
+	return new_list;
+}
+
 //void array_list_init(size_t initial_capacity, float realloc_factor, int SYNC_MODE, array_list_t *array_list_p) {
 //	array_list_p->capacity = initial_capacity;
 //	array_list_p->size = 0;

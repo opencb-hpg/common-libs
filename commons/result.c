@@ -1,5 +1,6 @@
 #include "result.h"
 
+void result_json_write_items(result_file_t *result_file, enum ITEM_TYPE item_type, FILE *file);
 
 result_file_t *result_file_open(char *filename);
 

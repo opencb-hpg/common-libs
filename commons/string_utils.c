@@ -447,7 +447,9 @@ unsigned int get_to_first_blank(char *str_p, unsigned int length, char *str_out_
     str_pos = 0;
   }
   
-  while ((str_p[str_pos] != ' ') && (str_pos < length)) {
+  while ((str_p[str_pos] != ' ') && 
+	 (str_p[str_pos] != '/') && 
+	 (str_pos < length)) {
     //printf("-->%c/%i\n", str_p[str_pos], str_pos);
     str_out_p[res_pos] = str_p[str_pos];
     //printf("<--%c/%i\n", str_out_p[res_pos], res_pos);

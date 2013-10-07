@@ -530,8 +530,8 @@ void *thread_function(void *wf_context) {
 
   int num_threads = wf->num_threads;
   workflow_stage_function_t stage_function = NULL;
-  workflow_producer_function_t producer_function = wf->producer_function;
-  workflow_consumer_function_t consumer_function = wf->consumer_function;
+  workflow_producer_function_t producer_function = (workflow_producer_function_t)wf->producer_function;
+  workflow_consumer_function_t consumer_function = (workflow_consumer_function_t)wf->consumer_function;
 
   while (workflow_get_status(wf) == WORKFLOW_STATUS_RUNNING) {
     if (producer_function                        &&
