@@ -398,9 +398,9 @@ int strcasecmp(const char *s1, const char *s2) {
 //-----------------------------------------------------------
 // enum bases{DD=-1,AA=0,CC=1,GG=2,TT=3}; //Lexicographic order
 // const char alph_rep[] ={'A','C','G','T'};
-int table[128] = {};
+//int table[128] = {};
 
-void initTable() {
+/*void initTable() {
   table['a'] = AA;
   table['A'] = AA;
   table['c'] = CC;
@@ -412,7 +412,8 @@ void initTable() {
   table['n'] = AA;
   table['N'] = AA;
 }
-
+*/
+/*
 char* encodeBases(char* dest, char* src, unsigned int length) {
   unsigned int i;
   for (i=0; i<length; i++)
@@ -428,7 +429,7 @@ char* decodeBases(char* dest, char* src, unsigned int length) {
   dest[length] = '\0';
   return dest;
 }
-
+*/
 //-----------------------------------------------------------------
 // Return the substring from start to first blank
 // If first position contains '@' this not 

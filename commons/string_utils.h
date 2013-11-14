@@ -349,8 +349,8 @@ int strcasecmp(const char *s1, const char *s2);
  *    		Functions to encode/decode nucleotid sequences			*
  * *****************************************************************************/
 
-enum bases{ DD = -1, AA = 0, CC = 1, GG = 2, TT = 3 }; //Lexicographic order
-static const char alph_rep[] ={'A', 'C', 'G', 'T'};
+//enum bases{ DD = -1, AA = 0, CC = 1, GG = 2, TT = 3 }; //Lexicographic order
+//static const char alph_rep[] ={'A', 'C', 'G', 'T'};
 
 /**
  *  @brief Inits table for nucleotide coding/decoding 
@@ -358,7 +358,7 @@ static const char alph_rep[] ={'A', 'C', 'G', 'T'};
  * 
  *  Inits table[128] for nucleotide coding/decoding 
  */
-void initTable();
+//void initTable();
 
 /**
  *  @brief Encodes a sequence of plain nucleotides
