@@ -345,42 +345,4 @@ unsigned int get_to_first_blank(char *str_p, unsigned int length, char *str_out_
  */
 int strcasecmp(const char *s1, const char *s2);
 
-/* ******************************************************************************
- *    		Functions to encode/decode nucleotid sequences			*
- * *****************************************************************************/
-
-//enum bases{ DD = -1, AA = 0, CC = 1, GG = 2, TT = 3 }; //Lexicographic order
-//static const char alph_rep[] ={'A', 'C', 'G', 'T'};
-
-/**
- *  @brief Inits table for nucleotide coding/decoding 
- *  @return void
- * 
- *  Inits table[128] for nucleotide coding/decoding 
- */
-//void initTable();
-
-/**
- *  @brief Encodes a sequence of plain nucleotides
- *  @param dest pointer to destination char with encoded nucleotides
- *  @param src pointer to char with plain nucleotides
- *  @param length length of the nucleotide sequence
- *  @return pointer to char 
- * 
- *  Encodes a sequence of plain nucleotides
- */
-char* encodeBases(char *dest, char* src, unsigned int length);
-
-/**
- *  @brief Decodes a sequence of encoded nucleotides
- *  @param dest pointer to destination char with plain nucleotides
- *  @param src pointer to char with encoded nucleotides
- *  @param length length of the nucleotide sequence
- *  @return pointer to char 
- * 
- *  Decodes a sequence of encoded nucleotides
- */
-char* decodeBases(char *dest, char* src, unsigned int length);
-
-
 #endif	/*    STRING_UTILS_H	*/
