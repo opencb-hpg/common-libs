@@ -47,6 +47,10 @@ START_TEST(test_insert_and_remove) {
     fail_if((int) linked_list_get_last(list) != 5, "Get: Position #5 (last) must contain number 5");
     
     fail_if((int) linked_list_remove_first(list) != 0, "Remove: Position #0 (first) must contain number 0");
+    fail_if((int) linked_list_insert_first(NULL, list) != 1, "Insert: Position #0");
+    fail_if((int) linked_list_remove_at(0, list) != 0, "Remove: Position #0 must contain number 0");
+    fail_if((int) linked_list_insert_last(NULL, list) != 1, "Insert: Position last");
+    fail_if((int) linked_list_remove_at(linked_list_size(list)-1, list) != 0, "Remove: Position size-1(last) must contain number 0");
     fail_if((int) linked_list_remove_last(list) != 5, "Remove: Position #5 (last) must contain number 5");
     fail_if((int) linked_list_remove_at(2, list) != 3, "Remove: Position #2 must contain number 3");
     

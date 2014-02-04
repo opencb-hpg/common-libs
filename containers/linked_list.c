@@ -259,7 +259,41 @@ int linked_list_insert_all_at(size_t index, void** item_p, size_t num_items, lin
 
 
 void* linked_list_remove(void *item, linked_list_t *linked_list_p) {
-    return NULL;
+    assert(linked_list_p && item);
+    
+	if(linked_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
+		pthread_mutex_lock(&linked_list_p->lock);
+	}
+
+	linked_list_item_t* list_item = linked_list_p->first;
+
+	while(list_item != NULL && list_item->item != item) {
+		list_item = list_item->next;
+	}
+
+	if (list_item) {
+		if (list_item != linked_list_p->first)
+			list_item->prev->next = list_item->next;
+		else{
+			if(linked_list_p->first = list_item->next)
+				list_item->next->prev = NULL;
+		}
+		if (list_item != linked_list_p->last)
+			list_item->next->prev = list_item->prev;
+		else{
+			if(linked_list_p->last = list_item->prev)
+				list_item->prev->next = NULL;
+		}
+		
+		linked_list_p->size--;
+
+		linked_list_item_free(list_item, NULL);
+	}
+
+	if(linked_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
+		pthread_mutex_unlock(&linked_list_p->lock);
+	}
+	return item;
 }
 
 void* linked_list_remove_first(linked_list_t *linked_list_p) {
@@ -278,6 +312,8 @@ void* linked_list_remove_first(linked_list_t *linked_list_p) {
 	if (linked_list_p->first) {
 	  linked_list_p->first->prev = NULL;
 	}
+	else
+		linked_list_p->last = NULL; //jj
 	linked_list_p->size--;			
 	item = list_item->item;
 	linked_list_item_free(list_item, NULL);
@@ -308,6 +344,8 @@ void* linked_list_remove_last(linked_list_t *linked_list_p) {
 	if (linked_list_p->last) {
 	  linked_list_p->last->next = NULL;
 	}
+	else
+		linked_list_p->first = NULL;	//jj
 	linked_list_p->size--;
 	item = list_item->item;
 	linked_list_item_free(list_item, NULL);
@@ -327,6 +365,11 @@ void* linked_list_remove_at(size_t index, linked_list_t *linked_list_p) {
     void *item = NULL;
     
     if(index >= 0 && index < linked_list_p->size) {
+		if(index == 0)	//jj
+			return linked_list_remove_first(linked_list_p);
+		if(index == linked_list_p->size-1)
+			return linked_list_remove_last(linked_list_p);
+		
         if(linked_list_p->mode == COLLECTION_MODE_SYNCHRONIZED) {
             pthread_mutex_lock(&linked_list_p->lock);
         }
