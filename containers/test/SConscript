@@ -14,3 +14,26 @@ check_linked_list = env.Program('linked_list.test',
 				           '%s/containers/linked_list.o' % commons_path
                                           ]
                                 )
+
+
+env2 = Environment(CFLAGS = '-std=c99 -D_XOPEN_SOURCE=600 -D_GNU_SOURCE',
+                  CPPPATH = ['#', commons_path, '/usr/include', '/usr/local/include', commons_path ],
+                  LIBPATH = ['/usr/lib', '/usr/local/lib' ],
+                  LIBS = ['check', 'curl', 'm', 'z', 'rt']
+                  )
+Import("debug")
+
+if debug == 1:
+    env2['CFLAGS'] += ' -O0 -g'
+else:
+    env2['CFLAGS'] += ' -O3'
+
+
+graph_time_test = env2.Program('graph_time_test',
+								['graph_time_test.c',
+							   '%s/commons/string_utils.o' % commons_path,
+							   '%s/commons/log.o' % commons_path,
+							   Glob('%s/containers/*.o' % commons_path),
+							   Glob('%s/containers/cprops/*.o' % commons_path)
+							   ]
+			)
